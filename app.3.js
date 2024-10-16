@@ -129,9 +129,9 @@ global.tips = tips[Math.floor(Math.random() * tips.length)];
 // Window setup <3
 global.mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 global.mobile && document.body.classList.add("mobile");
-function getMockups() {
+function getMockups(server) {
     global.mockupLoading = new Promise(Resolve => {
-        util.pullJSON("mockups").then(data => {
+        util.pullJSON("mockups", server).then(data => {
             global.mockups = data;
             console.log('Mockups loading complete.');
             Resolve();
@@ -210,6 +210,7 @@ function getElements(kb, storeInDefault) {
             window.isMultiserver = true
             const servers = [
                 { ip: "growth-tdm.dakarr.cc", region: "US", gameMode: null, players: 0, }, 
+                { ip: "localhost", region: "X", gameMode: null, players: 0, },
             ];
         
             let serverSelector = document.getElementById("serverSelector"),
@@ -230,7 +231,7 @@ function getElements(kb, storeInDefault) {
         
             const fetches = servers.map(async (server) => {
                 try {
-                    const serverData = await util.pullJSON("gamemodeData");
+                    const serverData = await util.pullJSON("gamemodeData", server.ip);
 
                     server.gameMode = serverData.gameMode;
                     server.players = serverData.players;
@@ -257,7 +258,8 @@ function getElements(kb, storeInDefault) {
                         tr.classList.add("selected");
                         myServer = tr;
                         window.serverAdd = server.ip;
-                        getMockups();
+                        console.log(window.serverAdd, server);
+                        getMockups(server.ip);
                     };
         
                     tbody.appendChild(tr);
@@ -970,12 +972,12 @@ function drawPoly(context, centerX, centerY, radius, sides, angle = 0, borderles
                     cy = centerY + radius * dip * Math.sin(htheta),
                     px = centerX + radius * Math.cos(theta),
                     py = centerY + radius * Math.sin(theta);
-                /*if (curvyTraps) {
+                if (curvyTraps) {
                     context.quadraticCurveTo(cx, cy, px, py);
                 } else {
                     context.lineTo(cx, cy);
                     context.lineTo(px, py);
-                }*/
+                }
                 context.quadraticCurveTo(cx, cy, px, py);
             }
         } else if (sides > 0) {
@@ -1587,12 +1589,12 @@ global.scrollX = global.scrollY = global.fixedScrollX = global.fixedScrollY = -1
 global.scrollVelocityY = global.scrollVelocityX = 0;
 let lastGuiType = null;
 function drawUpgradeTree(spacing, alcoveSize) {
-    /*if (global.died) {
+    if (global.died) {
         global.showTree = false;
         global.scrollX = global.scrollY = global.fixedScrollX = global.fixedScrollY = global.scrollVelocityY = global.scrollVelocityX = 0;
         global.treeScale = 1;
         return;
-    }*/ // Hide the tree on death
+    } // Hide the tree on death
 
     if (lastGuiType != gui.type) {
         let m = util.getEntityImageFromMockup(gui.type), // The mockup that corresponds to the player's tank
@@ -1683,9 +1685,9 @@ function drawMessages(spacing, alcoveSize) {
     if (global.mobile) {
         if (global.canUpgrade) {
             mobileUpgradeGlide.set(0 + (global.canUpgrade || global.upgradeHover));
-            y += (alcoveSize / 1.4 /*+ spacing * 2*/) * mobileUpgradeGlide.get();
+            y += (alcoveSize / 1.4) * mobileUpgradeGlide.get();
         }
-        y += global.canSkill || global.showSkill ? (alcoveSize / 2.2 /*+ spacing * 2*/) * statMenu.get() : 0;
+        y += global.canSkill || global.showSkill ? (alcoveSize / 2.2) * statMenu.get() : 0;
     }
     // Draw each message
     for (let i = global.messages.length - 1; i >= 0; i--) {
@@ -2032,7 +2034,7 @@ function drawLeaderboard(spacing, alcoveSize, max) {
         if (global.canUpgrade) {
             y += (alcoveSize / 1.4) * mobileGlide;
         }
-        y += global.canSkill || global.showSkill ? (alcoveSize / 2.2 /*+ spacing * 2*/) * statMenu.get() : 0;
+        y += global.canSkill || global.showSkill ? (alcoveSize / 2.2) * statMenu.get() : 0;
     }
 
     drawText("Leaderboard", Math.round(x + len / 2) + 0.5, Math.round(y - 6) + 0.5, height + 3.5, color.guiwhite, "center");
@@ -2285,7 +2287,7 @@ function drawMobileButtons(spacing, alcoveSize) {
     let upgradeColumns = Math.ceil(gui.upgrades.length / 9);
     let yOffset = 0;
     if (global.mobile) {
-      yOffset += global.canUpgrade ? (alcoveSize / 1.5 /*+ spacing * 2*/) * mobileUpgradeGlide.get() * upgradeColumns / 1.5 + spacing * (upgradeColumns + 1.55) + -17.5 : 0;
+      yOffset += global.canUpgrade ? (alcoveSize / 1.5) * mobileUpgradeGlide.get() * upgradeColumns / 1.5 + spacing * (upgradeColumns + 1.55) + -17.5 : 0;
       yOffset += global.canSkill || global.showSkill ? statMenu.get() * alcoveSize / 2.6 + spacing / 0.75 : 0;
     }
     let buttons;
