@@ -972,13 +972,9 @@ function drawPoly(context, centerX, centerY, radius, sides, angle = 0, borderles
                     cy = centerY + radius * dip * Math.sin(htheta),
                     px = centerX + radius * Math.cos(theta),
                     py = centerY + radius * Math.sin(theta);
-                if (curvyTraps) {
-                    context.quadraticCurveTo(cx, cy, px, py);
-                } else {
                     context.lineTo(cx, cy);
                     context.lineTo(px, py);
-                }
-                context.quadraticCurveTo(cx, cy, px, py);
+                    context.quadraticCurveTo(cx, cy, px, py);
             }
         } else if (sides > 0) {
             // Polygon
