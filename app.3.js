@@ -209,7 +209,7 @@ function getElements(kb, storeInDefault) {
     window.onload = async () => {
             window.isMultiserver = true
             const servers = [
-                { ip: location.host, region: "US", gameMode: null, players: 0, }, 
+                { ip: "growth-tdm.dakarr.cc", region: "US", gameMode: null, players: 0, }, 
             ];
         
             let serverSelector = document.getElementById("serverSelector"),
