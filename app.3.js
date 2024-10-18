@@ -273,10 +273,6 @@ function getElements(kb, storeInDefault) {
             });
         
             await Promise.any(fetches);
-        
-            if (myServer && myServer.children[0] && myServer.children[0].onclick) {
-                myServer.children
-            }
     // Save forms
     util.retrieveFromLocalStorage("playerNameInput");
     util.retrieveFromLocalStorage("playerKeyInput");
