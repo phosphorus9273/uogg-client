@@ -60,13 +60,41 @@ canvas {
   image-rendering: optimizeSpeed;
   image-rendering: pixelated;
 }
-.ad-container-right {
+#ads #a {
   position: fixed;
-  top: 75px;
+  top: 10%;
   right: 10px;
   width: 160px;
   height: 600px;
   z-index: 100;
+}
+#ads #b {
+  position: fixed;
+  top: 90%;
+  left: 50%;
+  width: 728px;
+  height: 90px;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+}
+body.mobile #ads #b {
+  position: fixed;
+  top: 90%;
+  left: 50%;
+  width: 728px;
+  height: 90px;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+  display: hidden;
+}
+body.mobile #ads #a {
+  position: fixed;
+  top: 7.5%;
+  right: 10px;
+  width: 80px;
+  height: 300px;
+  z-index: 100;
+  display: hidden;
 }
 
 #gameName {
