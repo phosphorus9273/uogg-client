@@ -620,6 +620,9 @@ function parseTheme(string) {
 // This starts the game and sets up the websocket
 function startGame() {
     // Set flag
+    while (document.getElementsByClassName("ad-container-right").length > 0) {
+      document.getElementsByClassName("ad-container-right")[0].parentNode.removeChild(document.getElementsByClassName("ad-container-right")[0]);
+    }
     global.gameLoading = true;
     console.log('Started connecting.');
     if (global.mobile) {
