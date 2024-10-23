@@ -128,7 +128,11 @@ let tips = global.tips[Math.floor(Math.random() * global.tips.length)];
 global.tips = tips[Math.floor(Math.random() * tips.length)];
 // Window setup <3
 global.mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-global.mobile && document.body.classList.add("mobile");
+if (global.mobile) {
+    document.body.classList.add("mobile");
+    document.getElementById("ads").remove();
+}
+
 function getMockups(server) {
     global.mockupLoading = new Promise(Resolve => {
         util.pullJSON("mockups", server).then(data => {
@@ -206,73 +210,80 @@ function getElements(kb, storeInDefault) {
     }
 };
 
-    window.onload = async () => {
-            window.isMultiserver = true
-            const servers = [
-                { ip: "wg.dakarr.cc", region: "US", gameMode: null, players: 0, }, 
-                { ip: "localhost", region: "X", gameMode: null, players: 0, },
-            ];
-        
-            let serverSelector = document.getElementById("serverSelector"),
-                tbody = document.createElement("tbody");
-            serverSelector.style.display = "block";
-        
-            const serverName = document.getElementById("serverName");
-            if (serverName) serverName.remove();
-        
-            serverSelector.classList.add("serverSelector", "shadowscroll");
-            serverSelector.appendChild(tbody);
-        
-            let myServer = {
-                classList: {
-                    contains: () => false,
-                },
-            };
-        
-            const fetches = servers.map(async (server) => {
-                try {
-                    const serverData = await util.pullJSON("gamemodeData", server.ip);
+window.onload = async () => {
+    window.isMultiserver = true;
+    const servers = [
+        { ip: "wg.dakarr.cc", region: "US", gameMode: null, players: 0 },
+        { ip: "localhost", region: "X", gameMode: null, players: 0 },
+    ];
 
-                    server.gameMode = serverData.gameMode;
-                    server.players = serverData.players;
-        
-                    const tr = document.createElement("tr");
-        
-                    const tdGameMode = document.createElement("td");
-                    tdGameMode.textContent = server.gameMode;
-                    tdGameMode.classList.add("tdCenter");
-        
-                    const tdPlayers = document.createElement("td");
-                    tdPlayers.textContent = `${server.players}/40`;
-        
-                    const tdServerInfo = document.createElement("td");
-                    tdServerInfo.textContent = server.region;
-        
-                    tr.appendChild(tdServerInfo);
-                    tr.appendChild(tdGameMode);
-                    tr.appendChild(tdPlayers);
-                    tr.onclick = () => {
-                        if (myServer.classList.contains("selected")) {
-                            myServer.classList.remove("selected");
-                        }
-                        tr.classList.add("selected");
-                        myServer = tr;
-                        window.serverAdd = server.ip;
-                        console.log(window.serverAdd, server);
-                        getMockups(server.ip);
-                    };
-        
-                    tbody.appendChild(tr);
-                    myServer = tr;
-        
-                    return true;
-                } catch (e) {
-                    console.log(`Failed to fetch data for server: ${server.ip}`, e);
-                    return false;
-                }
-            });
-        
-            await Promise.any(fetches);
+    let serverSelector = document.getElementById("serverSelector"),
+        tbody = document.createElement("tbody");
+    serverSelector.style.display = "block";
+
+    const serverName = document.getElementById("serverName");
+    if (serverName) serverName.remove();
+
+    serverSelector.classList.add("serverSelector", "shadowscroll");
+    serverSelector.appendChild(tbody);
+
+    let myServer = {
+        classList: {
+            contains: () => false,
+        },
+    };
+
+    // Fetch data for all servers in parallel
+    const fetches = servers.map(async (server) => {
+        try {
+            const serverData = await util.pullJSON("gamemodeData", server.ip);
+            server.gameMode = serverData.gameMode;
+            server.players = serverData.players;
+            return server; // Return server with updated data
+        } catch (e) {
+            console.log(`Failed to fetch data for server: ${server.ip}`, e);
+            return null; // If fetch fails, return null
+        }
+    });
+
+    // Wait for all fetches to complete
+    const results = await Promise.all(fetches);
+
+    // Filter out failed fetches (nulls)
+    const validServers = results.filter(server => server !== null);
+
+    // Render the table rows in the same order as the servers array
+    validServers.forEach((server) => {
+        const tr = document.createElement("tr");
+
+        const tdGameMode = document.createElement("td");
+        tdGameMode.textContent = server.gameMode;
+        tdGameMode.classList.add("tdCenter");
+
+        const tdPlayers = document.createElement("td");
+        tdPlayers.textContent = `${server.players}/40`;
+
+        const tdServerInfo = document.createElement("td");
+        tdServerInfo.textContent = server.region;
+
+        tr.appendChild(tdServerInfo);
+        tr.appendChild(tdGameMode);
+        tr.appendChild(tdPlayers);
+
+        tr.onclick = () => {
+            if (myServer.classList.contains("selected")) {
+                myServer.classList.remove("selected");
+            }
+            tr.classList.add("selected");
+            myServer = tr;
+            window.serverAdd = server.ip;
+            console.log(window.serverAdd, server);
+            getMockups(server.ip);
+        };
+
+        tbody.appendChild(tr);
+        myServer = tr;
+    });
     // Save forms
     util.retrieveFromLocalStorage("playerNameInput");
     util.retrieveFromLocalStorage("playerKeyInput");
@@ -388,6 +399,7 @@ function toggleOptionsMenu() {
     a.onclick = () => { // When the button is triggered, This code runs.
         clicked = !clicked;
         toggle();
+        if (clicked) document.getElementById("ads").remove();
     };
     return () => {
         clicked || ((clicked = !0), toggle());
@@ -621,7 +633,7 @@ function parseTheme(string) {
 function startGame() {
     // Set flag
     document.getElementById("ads").remove();
-    console.log("removed ads")
+    console.log("removed ads");
     global.gameLoading = true;
     console.log('Started connecting.');
     if (global.mobile) {
