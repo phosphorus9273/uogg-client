@@ -128,7 +128,11 @@ let tips = global.tips[Math.floor(Math.random() * global.tips.length)];
 global.tips = tips[Math.floor(Math.random() * tips.length)];
 // Window setup <3
 global.mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-global.mobile && document.body.classList.add("mobile");
+if (global.mobile) {
+    document.body.classList.add("mobile");
+    document.getElementById("ads").remove();
+}
+
 function getMockups(server) {
     global.mockupLoading = new Promise(Resolve => {
         util.pullJSON("mockups", server).then(data => {
@@ -395,6 +399,7 @@ function toggleOptionsMenu() {
     a.onclick = () => { // When the button is triggered, This code runs.
         clicked = !clicked;
         toggle();
+        if (clicked) document.getElementById("ads").remove();
     };
     return () => {
         clicked || ((clicked = !0), toggle());
