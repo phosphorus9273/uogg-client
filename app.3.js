@@ -219,6 +219,10 @@ window.onload = async () => {
         { ip: "localhost", region: "X", gameMode: null, players: 0 },
     ];
 
+    if (new URL(window.location.href).searchParams.get("test") === "1") {
+        servers.push({ ip: "eb.dakarr.cc", region: "EU", gameMode: null, players: 0 },)
+    };
+
     let serverSelector = document.getElementById("serverSelector"),
         tbody = document.createElement("tbody");
     serverSelector.style.display = "block";
