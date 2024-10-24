@@ -216,12 +216,13 @@ window.onload = async () => {
     window.isMultiserver = true;
     const servers = [
         { ip: "wg.dakarr.cc", region: "US", gameMode: null, players: 0 },
+        { ip: "eb.dakarr.cc", region: "EU", gameMode: null, players: 0 },
         { ip: "localhost", region: "X", gameMode: null, players: 0 },
     ];
 
-    if (new URL(window.location.href).searchParams.get("test") === "1") {
+    /*if (new URL(window.location.href).searchParams.get("test") === "1") {
         servers.push({ ip: "eb.dakarr.cc", region: "EU", gameMode: null, players: 0 },)
-    };
+    };*/
 
     let serverSelector = document.getElementById("serverSelector"),
         tbody = document.createElement("tbody");
