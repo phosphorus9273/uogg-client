@@ -130,7 +130,9 @@ global.tips = tips[Math.floor(Math.random() * tips.length)];
 global.mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 if (global.mobile) {
     document.body.classList.add("mobile");
-    document.getElementById("ads").remove();
+    if (document.getElementById("ads")) {
+      document.getElementById("ads").remove();
+    }
 }
 
 function getMockups(server) {
@@ -233,26 +235,23 @@ window.onload = async () => {
         },
     };
 
-    // Fetch data for all servers in parallel
     const fetches = servers.map(async (server) => {
         try {
             const serverData = await util.pullJSON("gamemodeData", server.ip);
             server.gameMode = serverData.gameMode;
             server.players = serverData.players;
-            return server; // Return server with updated data
+            return server;
         } catch (e) {
             console.log(`Failed to fetch data for server: ${server.ip}`, e);
-            return null; // If fetch fails, return null
+            return null;
         }
     });
 
-    // Wait for all fetches to complete
+
     const results = await Promise.all(fetches);
 
-    // Filter out failed fetches (nulls)
     const validServers = results.filter(server => server !== null);
 
-    // Render the table rows in the same order as the servers array
     validServers.forEach((server) => {
         const tr = document.createElement("tr");
 
@@ -277,7 +276,6 @@ window.onload = async () => {
             tr.classList.add("selected");
             myServer = tr;
             window.serverAdd = server.ip;
-            console.log(window.serverAdd, server);
             getMockups(server.ip);
         };
 
@@ -399,7 +397,11 @@ function toggleOptionsMenu() {
     a.onclick = () => { // When the button is triggered, This code runs.
         clicked = !clicked;
         toggle();
-        if (clicked) document.getElementById("ads").remove();
+        if (clicked) {
+          if (document.getElementById("ads")) {
+            document.getElementById("ads").remove();
+          }
+        }
     };
     return () => {
         clicked || ((clicked = !0), toggle());
@@ -632,7 +634,9 @@ function parseTheme(string) {
 // This starts the game and sets up the websocket
 function startGame() {
     // Set flag
-    document.getElementById("ads").remove();
+    if (document.getElementById("ads")) {
+      document.getElementById("ads").remove();
+    }
     console.log("removed ads");
     global.gameLoading = true;
     console.log('Started connecting.');
