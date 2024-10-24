@@ -130,7 +130,9 @@ global.tips = tips[Math.floor(Math.random() * tips.length)];
 global.mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 if (global.mobile) {
     document.body.classList.add("mobile");
-    document.getElementById("ads").remove();
+    if (document.getElementById("ads")) {
+      document.getElementById("ads").remove();
+    }
 }
 
 function getMockups(server) {
@@ -399,7 +401,11 @@ function toggleOptionsMenu() {
     a.onclick = () => { // When the button is triggered, This code runs.
         clicked = !clicked;
         toggle();
-        if (clicked) document.getElementById("ads").remove();
+        if (clicked) {
+          if (document.getElementById("ads")) {
+            document.getElementById("ads").remove();
+          }
+        }
     };
     return () => {
         clicked || ((clicked = !0), toggle());
@@ -632,7 +638,9 @@ function parseTheme(string) {
 // This starts the game and sets up the websocket
 function startGame() {
     // Set flag
-    document.getElementById("ads").remove();
+    if (document.getElementById("ads")) {
+      document.getElementById("ads").remove();
+    }
     console.log("removed ads");
     global.gameLoading = true;
     console.log('Started connecting.');
