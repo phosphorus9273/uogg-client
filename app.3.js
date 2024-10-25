@@ -144,6 +144,7 @@ function getMockups(server) {
         });
     });
 }
+
 function getKeybinds() {
     let kb = localStorage.getItem("keybinds");
     keybinds = typeof kb === "string" && kb.startsWith("{") ? JSON.parse(kb) : {};
