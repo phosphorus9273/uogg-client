@@ -220,7 +220,10 @@ window.onload = async () => {
     ];
 
     if (new URL(window.location.href).searchParams.get("test") === "1") {
-        servers.push([{ ip: "eb.dakarr.cc", region: "EU", gameMode: null, players: 0 },{ ip: "localhost", region: "X", gameMode: null, players: 0 }])
+        servers.push(
+            { ip: "eb.dakarr.cc", region: "EU", gameMode: null, players: 0 },
+            { ip: "localhost", region: "X", gameMode: null, players: 0 }
+        );
     };
 
     let serverSelector = document.getElementById("serverSelector"),
