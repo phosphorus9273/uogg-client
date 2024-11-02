@@ -1222,8 +1222,8 @@ function drawHealth(x, y, instance, ratio, alpha) {
         var name = instance.name.substring(7, instance.name.length + 1);
         var namecolor = instance.name.substring(0, 7);
         ctx.globalAlpha = fade * (alpha ** 2);
-        if (global.GUIStatus.renderPlayerNames) drawText(name, x, y - realSize - 22 * ratio, 12 * ratio, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
-        if (global.GUIStatus.renderPlayerScores) drawText(util.handleLargeNumber(instance.score, 1), x, y - realSize - 12 * ratio, 6 * ratio, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
+        if (global.GUIStatus.renderPlayerNames) drawText(name, x, y - realSize - (22 + (instance.size / 3)) * ratio, Math.max(12, (instance.size / 2)) * ratio/*12 * ratio*/, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
+        if (global.GUIStatus.renderPlayerScores) drawText(util.handleLargeNumber(instance.score, 1), x, y - realSize - 12 * ratio, Math.max(3 * ratio, (instance.size / 6)) * ratio, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
     }
 }
 
