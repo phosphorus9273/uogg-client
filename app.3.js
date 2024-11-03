@@ -144,6 +144,7 @@ function getMockups(server) {
         });
     });
 }
+
 function getKeybinds() {
     let kb = localStorage.getItem("keybinds");
     keybinds = typeof kb === "string" && kb.startsWith("{") ? JSON.parse(kb) : {};
@@ -216,8 +217,15 @@ window.onload = async () => {
     window.isMultiserver = true;
     const servers = [
         { ip: "wg.dakarr.cc", region: "US", gameMode: null, players: 0 },
-        { ip: "localhost", region: "X", gameMode: null, players: 0 },
     ];
+
+    if (new URL(window.location.href).searchParams.get("test") === "1") {
+        servers.push(
+            { ip: "eb.dakarr.cc", region: "EU", gameMode: null, players: 0 },
+            { ip: "localhost", region: "X", gameMode: null, players: 0 },
+            { ip: "phosphorus.dakarr.cc", region: "PHS", gameMode: null, players: 0},
+        );
+    };
 
     let serverSelector = document.getElementById("serverSelector"),
         tbody = document.createElement("tbody");
@@ -235,26 +243,23 @@ window.onload = async () => {
         },
     };
 
-    // Fetch data for all servers in parallel
     const fetches = servers.map(async (server) => {
         try {
             const serverData = await util.pullJSON("gamemodeData", server.ip);
             server.gameMode = serverData.gameMode;
             server.players = serverData.players;
-            return server; // Return server with updated data
+            return server;
         } catch (e) {
             console.log(`Failed to fetch data for server: ${server.ip}`, e);
-            return null; // If fetch fails, return null
+            return null;
         }
     });
 
-    // Wait for all fetches to complete
+
     const results = await Promise.all(fetches);
 
-    // Filter out failed fetches (nulls)
     const validServers = results.filter(server => server !== null);
 
-    // Render the table rows in the same order as the servers array
     validServers.forEach((server) => {
         const tr = document.createElement("tr");
 
@@ -279,7 +284,6 @@ window.onload = async () => {
             tr.classList.add("selected");
             myServer = tr;
             window.serverAdd = server.ip;
-            console.log(window.serverAdd, server);
             getMockups(server.ip);
         };
 
@@ -1219,8 +1223,8 @@ function drawHealth(x, y, instance, ratio, alpha) {
         var name = instance.name.substring(7, instance.name.length + 1);
         var namecolor = instance.name.substring(0, 7);
         ctx.globalAlpha = fade * (alpha ** 2);
-        if (global.GUIStatus.renderPlayerNames) drawText(name, x, y - realSize - 22 * ratio, 12 * ratio, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
-        if (global.GUIStatus.renderPlayerScores) drawText(util.handleLargeNumber(instance.score, 1), x, y - realSize - 12 * ratio, 6 * ratio, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
+        if (global.GUIStatus.renderPlayerNames) drawText(name, x, y - realSize - (22 + (instance.size / 3)) * ratio, Math.max(12, (instance.size / 2)) * ratio/*12 * ratio*/, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
+        if (global.GUIStatus.renderPlayerScores) drawText(util.handleLargeNumber(instance.score, 1), x, y - realSize - 12 * ratio, Math.max(3 * ratio, (instance.size / 6)) * ratio, namecolor == "#ffffff" ? color.guiwhite : namecolor, "center");
     }
 }
 
@@ -1401,11 +1405,12 @@ var getClassUpgradeKey = function (number) {
     }
 };
 
-let tiles,
-    branches,
-    tankTree,
+let tiles = [],
+    branches = [],
+    tankTree = {},
     measureSize = (x, y, colorIndex, { index, tier = 0 }) => {
         tiles.push({ x, y, colorIndex, index });
+        //console.log(`measureSize called with x: ${x}, y: ${y}`);
         let { upgrades } = global.mockups[parseInt(index)],
             xStart = x,
             cumulativeWidth = 1,
@@ -1463,6 +1468,7 @@ function generateTankTree(indexes) {
         tankTree.height = Math.max(tankTree.height, y);
     }
 }
+
 
 function drawFloor(px, py, ratio) {
     // Clear the background + draw grid
