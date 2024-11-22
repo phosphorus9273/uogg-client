@@ -225,6 +225,9 @@ function getElements(kb, storeInDefault) {
 }
 window.onload = async () => {
     window.serverAdd = "u.phosphorus.cloud";
+    if (location.protocol === "http:") {
+        window.serverAdd = "localhost";
+    }
     if (Array.isArray(window.serverAdd)) {
         window.isMultiserver = true;
         const servers = window.serverAdd;
