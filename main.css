@@ -47,11 +47,20 @@ body {
 
 html,
 body,
-canvas {
+canvas,
+#ads {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
+}
+
+/* Ads */
+#ads #banner468x60 {
+    position: absolute;
+    left: 50%;
+    bottom: 10%;
+    transform: translateX(-50%);
 }
 
 canvas {

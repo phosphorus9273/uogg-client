@@ -10,6 +10,10 @@ import * as socketStuff from "./lib/socketInit.js";
 (async function (util, global, settings, Canvas, color, gameDraw, socketStuff) {
 
 let { socketInit, gui, leaderboard, minimap, moveCompensation, lag, getNow } = socketStuff;
+let hasAds = false;
+if (document.getElementById("ads")) {
+    hasAds = true
+};
 // fetch("changelog.md", { cache: "no-cache" })
 // .then((response) => response.text())
 // .then((response) => {
@@ -598,6 +602,12 @@ function parseTheme(string) {
 }
 // This starts the game and sets up the websocket
 function startGame() {
+    if (hasAds) {
+        const adElement = document.getElementById("ads");
+        if (adElement) {
+            adElement.remove();
+        }
+    }
     // Set flag
     global.gameLoading = true;
     console.log('Started connecting.');
