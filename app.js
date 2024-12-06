@@ -1364,7 +1364,7 @@ var getClassUpgradeKey = function (number) {
 let tiles,
     branches,
     tankTree,
-    measureSize = (x, y, colorIndex, { index, tier = 0 }) => {
+    measureSize = (x, y, colorIndex, { index, tier = 0 }, callStack = []) => {
         tiles.push({ x, y, colorIndex, index });
         let { upgrades } = global.mockups[parseInt(index)],
             xStart = x,
@@ -1383,7 +1383,13 @@ let tiles,
         for (let i = 0; i < hasUpgrades.length; i++) {
             let upgrade = hasUpgrades[i],
                 spacing = 2 * Math.max(1, upgrade.tier - tier),
-                measure = measureSize(x, y + spacing, upgrade.upgradeColor ?? i, upgrade);
+                callStackCopy = callStack.slice();
+            callStackCopy.push({ x, y: y + spacing });
+            if (callStackCopy.length > 1000) {
+                console.error("measure size hit max call stack, exiting");
+                return { width: 0, height: 0 };
+            }
+            let measure = measureSize(x, y + spacing, upgrade.upgradeColor ?? i, upgrade, callStackCopy);
             branches.push([{ x, y: y + Math.sign(i) }, { x, y: y + spacing + 1 }]);
             if (i === hasUpgrades.length - 1 && !noUpgrades.length) {
                 branches.push([{ x: xStart, y: y + 1 }, { x, y: y + 1 }]);
@@ -1396,7 +1402,13 @@ let tiles,
         for (let i = 0; i < noUpgrades.length; i++) {
             let upgrade = noUpgrades[i],
                 height = 2 + upgrades.length;
-            measureSize(x, y + 1 + i + Math.sign(hasUpgrades.length) * 2, upgrade.upgradeColor ?? i, upgrade);
+            let callStackCopy = callStack.slice();
+            callStackCopy.push({ x, y: y + 1 + i + Math.sign(hasUpgrades.length) * 2 });
+            if (callStackCopy.length > 1000) {
+                console.error("measure size hit max call stack, exiting");
+                return { width: 0, height: 0 };
+            }
+            measureSize(x, y + 1 + i + Math.sign(hasUpgrades.length) * 2, upgrade.upgradeColor ?? i, upgrade, callStackCopy);
             if (i === noUpgrades.length - 1) {
                 if (hasUpgrades.length > 1) cumulativeWidth++;
                 branches.push([{ x: xStart, y }, { x, y }]);
@@ -1409,6 +1421,7 @@ let tiles,
             height: 2 + maxHeight,
         };
     };
+
 function generateTankTree(indexes) {
     tiles = [];
     branches = [];
